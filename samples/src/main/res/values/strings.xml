@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Sample</string>
+    <string name="attest">Attest</string>
+    <string name="domain">Domain</string>
+    <string name="user_name">User Name</string>
+    <string name="apkcertificatedigestsha256_here">apkCertificateDigestSha256 here.</string>
+    <string name="lilium_report_here">Lilium report here.</string>
+</resources>

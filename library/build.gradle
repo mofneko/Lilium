@@ -1,0 +1,36 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'com.github.mofneko'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 28
+        versionCode 1
+        versionName "2.5.2"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    libraryVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFileName = "lilium-${android.defaultConfig.versionName}.aar"
+        }
+    }
+}
+
+dependencies {
+    compileOnly fileTree(dir: 'libs', include: ['play-services-base-16.0.1.aar'])
+    compileOnly fileTree(dir: 'libs', include: ['play-services-basement-16.0.1.aar'])
+    compileOnly fileTree(dir: 'libs', include: ['play-services-safetynet-16.0.0.aar'])
+    compileOnly fileTree(dir: 'libs', include: ['play-services-tasks-16.0.1.aar'])
+    compileOnly fileTree(dir: 'libs', include: ['unity-classes.jar'])
+}
