@@ -1,7 +1,9 @@
 package com.nekolaboratory.sample
 
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.nekolaboratory.Lilium.DefaultAttestCallback
@@ -34,12 +36,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getSignatureHash(): String {
-        val signatures = this.packageManager
-                .getPackageInfo(packageName, PackageManager.GET_SIGNATURES).signatures[0]
-        return toHexStringWithColons(MessageDigest.getInstance("SHA-256").digest(signatures.toByteArray()))
+        return getApplicationSignature().get(0)
     }
 
-    private fun toHexStringWithColons(bytes: ByteArray): String {
+    @SuppressLint("PackageManagerGetSignatures")
+    private fun getApplicationSignature(): List<String> {
+        val signatureList: List<String>
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val sig = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES).signingInfo
+                signatureList = if (sig.hasMultipleSigners()) {
+                    sig.apkContentsSigners.map {
+                        bytesToHex(MessageDigest.getInstance("SHA-256").digest(it.toByteArray()))
+                    }
+                } else {
+                    sig.signingCertificateHistory.map {
+                        bytesToHex(MessageDigest.getInstance("SHA-256").digest(it.toByteArray()))
+                    }
+                }
+            } else {
+                val sig = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES).signatures
+                signatureList = sig.map {
+                    bytesToHex(MessageDigest.getInstance("SHA-256").digest(it.toByteArray()))
+                }
+            }
+
+            return signatureList
+        } catch (e: Exception) {
+        }
+        return emptyList()
+    }
+
+    private fun bytesToHex(bytes: ByteArray): String {
         val hexArray = charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F')
         val hexChars = CharArray(bytes.size * 3 - 1)
         var v: Int
