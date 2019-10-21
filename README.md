@@ -136,7 +136,7 @@ and:
 
 ```gradle
 dependencies {
-    compile 'com.github.mofneko:Lilium:2.5.2'
+    compile 'com.github.mofneko:Lilium:2.5.3'
 }
 ```
 
