@@ -1,4 +1,4 @@
-<img src="./art/LILIUM.jpg" alt="Lilium" style="width:300px;"/>
+<img src="https://github.com/mofneko/Lilium/raw/master/art/LILIUM.jpg" alt="Lilium" style="width:300px;"/>
 
 =============================================
 
@@ -24,13 +24,13 @@ By verifying, it is possible to detect that an APK file is being executed by a m
 Refer to the following for each item described in the Report file.
 
 ```
- -nonce
+ ・nonce
 Nonce is a byte array passed as an argument when Lilium initialization processing is executed, and this value is included in SafetyNetReport as it is. The significance of this value is that, for example, a malicious user executes a verification process in advance with a normal non-tampered application, copies the contents of the report, and sends the report that is sent to the server with the tampered application to a normal system. Replacing can prevent hacks that pass the check by using nonce as a one-time token.
- -timestamp
+ ・timestamp
 The time when the report was created by SafetyNet is recorded. This value is usually the same time as the Lilium report creation time. If it is too far away, the above fraud may have been implemented, so library users should also verify this value.
- -SHA-256 hash of APK certificate
+ ・SHA-256 hash of APK certificate
 Usually, a certificate signed with the developer's private key is required to run APK on an Android device. The same applies when a falsifier falsifies an APK file. Unless there is a situation where the developer's private key is leaked to the falsifier, it is signed with the falsifier's private key. The signature file has a different hash. The main purpose of this library is to verify falsification by checking this value.
- -SHA-256 hash of APK
+ ・SHA-256 hash of APK
 A hash of the APK file itself. Needless to say, tampering can be determined using the property that the hash of the APK file is different before and after tampering. However, since this value fluctuates with each release, it costs operation. As long as the developer's private key is not leaked as explained in the SHA-256 hash of the APK certificate, it is safe to skip this value check.
 ```
 
@@ -167,6 +167,8 @@ Create a folder with the structure Assets/Plugins/Android and put [*.aar](https:
 
 and fact Delegate.
 
+*Note: Using the callback function in Unity Android Plugin means that the main thread ID is changed after the event fires. Please consider how to return to the main thread.*
+
 ```C# (Unity)
 　　public class AttestListener : AndroidJavaProxy
     {
@@ -273,7 +275,7 @@ Content-Type: application/json{
 - `PREPARE_RETURNS_500` prepare returned 500 group error.
 - `PREPARE_UNEXPECTED_ERROR` prepare another error.
 - `PLAY_SERVICE_UNAVAILABLE` Play Service disabled. (need dialog notice)
-- `ATTEST_API_ERROR_%d` `attest` returned ApiException.`%d`equals`ApiException#getStatusCode`(See (https://developers.google.com/android/reference/com/google/android/gms/common/api/ApiException.html#getStatusCode())
+- `ATTEST_API_ERROR_%d` `attest` returned ApiException.`%d`equals`ApiException#getStatusCode`(See https://developers.google.com/android/reference/com/google/android/gms/common/api/ApiException.html#getStatusCode)
 - `ATTEST_UNEXPECTED_ERROR` `attest` another error.
 - `UNEXPECTED_ERROR` another error.
 

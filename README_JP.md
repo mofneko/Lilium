@@ -1,4 +1,4 @@
-<img src="./art/LILIUM.jpg" alt="Lilium" style="width:300px;"/>
+<img src="https://github.com/mofneko/Lilium/raw/master/art/LILIUM.jpg" alt="Lilium" style="width:300px;"/>
 
 =============================================
 
@@ -22,13 +22,13 @@ APKのSHA-256ハッシュ
 Reportファイルに記載されている，それぞれの項目に対しては下記を参照してください．
 
 ```
- - nonce
+ ・nonce
 nonceはLiliumの初期化処理実行時に引数として渡すバイト配列で，この値がそのまま，SafetyNetReport内部に内包されて入ってきます．この値の存在意義としては，例えば悪意のあるユーザーが，事前に正常な非改竄アプリで検証処理を実行して，Report内容をコピーし，改竄アプリでサーバーに送信するReportを正常系のものに置換することでチェックをパスするハックをnonceをワンタイムトークンとして使用することで阻止することができます．
- - timestamp
+ ・timestamp
 SafetyNetによってReportが作成された時間が記録されています．この値は通常，LiliumのReport作成時刻と相違がない時間となっています．あまりにかけはなれている場合は，上記の不正が施されている可能性があるので，ライブラリのユーザーはこの値も検証するようにしてください．
- - APK証明書のSHA-256ハッシュ
+ ・APK証明書のSHA-256ハッシュ
 通常，APKをAndroid端末で実行するには開発者の秘密鍵で署名された証明書が必要です．改竄者がAPKファイルを改竄した場合にもそれは同様で，ディベロッパーの秘密鍵が改竄者に流出でもするような事態がない限り，改竄者の秘密鍵で署名がされるので非改竄APKと改竄APKで署名ファイルのハッシュが異なります．当ライブラリはこの値をチェックすることによって改竄の検証を行うことをメインにしています．
- - APKのSHA-256ハッシュ
+ ・APKのSHA-256ハッシュ
 APKファイル本体のハッシュになります．これは説明するまでもなく，改竄前と改竄後でAPKファイルのハッシュが異なる性質を利用して改竄の判定を行うことができます．しかし，リリース毎にこの値が変動するので運用のコストがかかります．APK証明書のSHA-256ハッシュの説明のようにディベロッパーの秘密鍵が流出している可能性でもない限りはこの値のチェックをスキップしても問題ないと考えられます．
 ```
 
@@ -165,6 +165,8 @@ Create a folder with the structure Assets/Plugins/Android and put [*.aar](https:
 
 and fact Delegate.
 
+*注意： UnityのAndroid Pluginでコールバック関数を使うことはイベント発火後メインスレッドIDを変更されることを意味します． メインスレッドに戻す方法を検討してください．*
+
 ```C# (Unity)
 　　public class AttestListener : AndroidJavaProxy
     {
@@ -277,7 +279,7 @@ Content-Type: application/json
 - `PREPARE_RETURNS_500` prepare returned 500 group error.
 - `PREPARE_UNEXPECTED_ERROR` prepare another error.
 - `PLAY_SERVICE_UNAVAILABLE` Play Service disabled. (need dialog notice)
-- `ATTEST_API_ERROR_%d` `attest` returned ApiException.`%d`equals`ApiException#getStatusCode`(See (https://developers.google.com/android/reference/com/google/android/gms/common/api/ApiException.html#getStatusCode())
+- `ATTEST_API_ERROR_%d` `attest` returned ApiException.`%d`equals`ApiException#getStatusCode`(See https://developers.google.com/android/reference/com/google/android/gms/common/api/ApiException.html#getStatusCode)
 - `ATTEST_UNEXPECTED_ERROR` `attest` another error.
 - `UNEXPECTED_ERROR` another error.
 
