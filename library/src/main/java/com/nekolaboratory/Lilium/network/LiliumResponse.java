@@ -9,7 +9,7 @@ import org.json.JSONException;
  */
 
 public interface LiliumResponse {
-    LiliumResponse deserialize(String json) throws JSONException;
+    void deserialize(String json) throws JSONException;
 
     int getStatusCode();
 

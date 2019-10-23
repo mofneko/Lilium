@@ -17,12 +17,14 @@ public class SafetyNetAttestReportRequest implements LiliumRequest {
     private String packageName;
     private String userId;
     private String safetynetJwt;
+    private LiliumConfig liliumConfig;
     private LiliumException safetynetError;
 
-    public SafetyNetAttestReportRequest(String packageName, String userId, String safetynetJwt, LiliumException liliumException) {
+    public SafetyNetAttestReportRequest(String packageName, String userId, String safetynetJwt, LiliumConfig liliumConfig, LiliumException liliumException) {
         setPackageName(packageName);
         setUserId(userId);
         setSafetynetJwt(safetynetJwt);
+        setLiliumConfig(liliumConfig);
         setSafetynetError(liliumException);
     }
 
@@ -50,6 +52,14 @@ public class SafetyNetAttestReportRequest implements LiliumRequest {
         this.safetynetJwt = safetynetJwt;
     }
 
+    public LiliumConfig getLiliumConfig() {
+        return liliumConfig;
+    }
+
+    public void setLiliumConfig(LiliumConfig liliumConfig) {
+        this.liliumConfig = liliumConfig;
+    }
+
     public LiliumException getSafetynetError() {
         return safetynetError;
     }
@@ -66,16 +76,16 @@ public class SafetyNetAttestReportRequest implements LiliumRequest {
     @Override
     public String serialize() {
         Map<String, Object> map = new HashMap<>();
-        map.put("package_name", getPackageName());
-        map.put("user_id", getUserId());
-        map.put("ver", BuildConfig.VERSION_NAME);
-        map.put("atn", getSafetynetJwt());
+        map.put(getLiliumConfig().getSafetyNetAttestReportRequestPackageName(), getPackageName());
+        map.put(getLiliumConfig().getSafetyNetAttestReportRequestUserId(), getUserId());
+        map.put(getLiliumConfig().getSafetyNetAttestReportRequestVer(), BuildConfig.VERSION_NAME);
+        map.put(getLiliumConfig().getSafetyNetAttestReportRequestAtn(), getSafetynetJwt());
         if (getSafetynetError() != null) {
-            map.put("atn_error", getSafetynetError().getStatusCode());
-            map.put("atn_error_msg", getSafetynetError().getException().getMessage());
+            map.put(getLiliumConfig().getSafetyNetAttestReportRequestAtnError(), getSafetynetError().getStatusCode());
+            map.put(getLiliumConfig().getSafetyNetAttestReportRequestAtnErrorMsg(), getSafetynetError().getException().getMessage());
         } else {
-            map.put("atn_error", null);
-            map.put("atn_error_msg", null);
+            map.put(getLiliumConfig().getSafetyNetAttestReportRequestAtnError(), null);
+            map.put(getLiliumConfig().getSafetyNetAttestReportRequestAtnErrorMsg(), null);
         }
         JSONObject jsonObject = new JSONObject(map);
         return jsonObject.toString();

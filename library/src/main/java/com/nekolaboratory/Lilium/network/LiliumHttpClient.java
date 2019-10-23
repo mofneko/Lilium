@@ -144,7 +144,8 @@ class LiliumHttpClientTask extends AsyncTask<Void, Void, LiliumResponse> {
                 getLiliumResponse().setLiliumException(liliumException);
                 return getLiliumResponse();
             }
-            return getLiliumResponse().deserialize(buffer);
+            getLiliumResponse().deserialize(buffer);
+            return getLiliumResponse();
         } catch (Exception e) {
             getLiliumResponse().setLiliumException(LiliumException.getLiliumExceptionFromException(e));
             return getLiliumResponse();

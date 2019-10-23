@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.nekolaboratory.Lilium.DefaultAttestCallback
 import com.nekolaboratory.Lilium.Lilium
+import com.nekolaboratory.Lilium.network.LiliumConfig
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -31,7 +32,7 @@ class MainActivity : AppCompatActivity() {
                 check_text.setText(response)
                 // post(baseUri.text.toString(), response, sampleRequestCallback)
             }
-            Lilium().attest(this, baseUri.text.toString(), userId.text.toString(), attestCallback)
+            Lilium().attest(this, baseUri.text.toString(), userId.text.toString(), attestCallback, LiliumConfig("{ attest_report : { package_name : \"packageName\", user_id : \"userUniqueId\", ver : \"ver\", atn : \"atn\", atn_error : \"atnError\", atn_error_msg : \"atnErrorMsg\" }, parameter_request : { package_name : \"packageName\", user_id : \"userUniqueId\" }, parameter_response : { api_key : \"apiKey\", nonce : \"nonce\" } }"))
         }
     }
 

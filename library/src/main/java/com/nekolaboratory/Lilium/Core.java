@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.nekolaboratory.Lilium.network.LiliumConfig;
 import com.nekolaboratory.Lilium.network.LiliumHttpClient;
 import com.nekolaboratory.Lilium.network.SafetyNetAttestReportRequest;
 import com.nekolaboratory.Lilium.network.SafetyNetAttestReportRequestCallback;
@@ -22,6 +23,7 @@ public class Core {
     private AttestCallback callback;
     private String userId;
     private String baseUri;
+    private LiliumConfig liliumConfig;
 
     private Core() {
     }
@@ -49,7 +51,7 @@ public class Core {
             public void onSuccess(String attestationResponse) {
                 AttestCallback baseCallback = getAttestCallback();
                 if (baseCallback != null) {
-                    SafetyNetAttestReportRequest safetyNetAttestReportRequest = new SafetyNetAttestReportRequest(getPackageName(), getUserId(), attestationResponse, null);
+                    SafetyNetAttestReportRequest safetyNetAttestReportRequest = new SafetyNetAttestReportRequest(getPackageName(), getUserId(), attestationResponse, getLiliumConfig(), null);
                     if (baseCallback instanceof InstantAttestCallback) {
                         final InstantAttestCallback instantAttestCallback = (InstantAttestCallback) baseCallback;
                         SafetyNetAttestReportRequestCallback callback = new SafetyNetAttestReportRequestCallback() {
@@ -79,7 +81,7 @@ public class Core {
             public void onFailed(LiliumException liliumException) {
                 AttestCallback baseCallback = getAttestCallback();
                 if (baseCallback != null) {
-                    final SafetyNetAttestReportRequest safetyNetAttestReportRequest = new SafetyNetAttestReportRequest(getPackageName(), getUserId(), null, liliumException);
+                    final SafetyNetAttestReportRequest safetyNetAttestReportRequest = new SafetyNetAttestReportRequest(getPackageName(), getUserId(), null, getLiliumConfig(), liliumException);
                     if (baseCallback instanceof InstantAttestCallback) {
                         final InstantAttestCallback instantAttestCallback = (InstantAttestCallback) baseCallback;
                         SafetyNetAttestReportRequestCallback callback = new SafetyNetAttestReportRequestCallback() {
@@ -107,10 +109,11 @@ public class Core {
         }).attest(requestParameter.getNonce(), requestParameter.getApiKey());
     }
 
-    public void initialize(AttestCallback attestCallback, String baseUri, String userId) {
+    public void initialize(AttestCallback attestCallback, String baseUri, String userId, LiliumConfig liliumConfig) {
         setAttestCallback(attestCallback);
         setBaseUri(baseUri);
         setUserId(userId);
+        setLiliumConfig(liliumConfig);
         SafetyNetParameterRequestCallback callback = new SafetyNetParameterRequestCallback() {
             @Override
             public void onFailed(LiliumException exception) {
@@ -119,7 +122,7 @@ public class Core {
                 }
                 AttestCallback baseCallback = getAttestCallback();
                 if (baseCallback != null) {
-                    SafetyNetAttestReportRequest safetyNetAttestReportRequest = new SafetyNetAttestReportRequest(getPackageName(), getUserId(), null, exception);
+                    SafetyNetAttestReportRequest safetyNetAttestReportRequest = new SafetyNetAttestReportRequest(getPackageName(), getUserId(), null, getLiliumConfig(), exception);
                     if (baseCallback instanceof InstantAttestCallback) {
                         final InstantAttestCallback instantAttestCallback = (InstantAttestCallback) baseCallback;
                         instantAttestCallback.onFailed(safetyNetAttestReportRequest.serialize());
@@ -135,7 +138,7 @@ public class Core {
                 attest(safetyNetParameterResponse);
             }
         };
-        new LiliumHttpClient(getBaseUri()).post(new SafetyNetParameterRequest(getPackageName(), getUserId()), new SafetyNetParameterResponse(), callback);
+        new LiliumHttpClient(getBaseUri()).post(new SafetyNetParameterRequest(getPackageName(), getUserId(), getLiliumConfig()), new SafetyNetParameterResponse(getLiliumConfig()), callback);
     }
 
     private String getPackageName() {
@@ -148,6 +151,18 @@ public class Core {
 
     private void setActivity(Activity activity) {
         this.activity = activity;
+    }
+
+    public LiliumConfig getLiliumConfig() {
+        return liliumConfig;
+    }
+
+    public void setLiliumConfig(LiliumConfig liliumConfig) {
+        if (liliumConfig == null) {
+            this.liliumConfig = new LiliumConfig();
+        } else {
+            this.liliumConfig = liliumConfig;
+        }
     }
 
     public AttestCallback getAttestCallback() {

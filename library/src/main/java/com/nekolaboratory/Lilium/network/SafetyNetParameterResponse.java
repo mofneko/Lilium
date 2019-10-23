@@ -15,7 +15,12 @@ public class SafetyNetParameterResponse implements LiliumResponse {
     private byte[] nonce;
     private String apiKey;
     private int statusCode;
+    private LiliumConfig liliumConfig;
     private LiliumException liliumException;
+
+    public SafetyNetParameterResponse(LiliumConfig liliumConfig) {
+        setLiliumConfig(liliumConfig);
+    }
 
     public String getApiKey() {
         return this.apiKey;
@@ -37,18 +42,23 @@ public class SafetyNetParameterResponse implements LiliumResponse {
         }
     }
 
-    @Override
-    public SafetyNetParameterResponse deserialize(String json) throws JSONException {
-        SafetyNetParameterResponse safetyNetParameterResponse = new SafetyNetParameterResponse();
+    public LiliumConfig getLiliumConfig() {
+        return liliumConfig;
+    }
 
+    public void setLiliumConfig(LiliumConfig liliumConfig) {
+        this.liliumConfig = liliumConfig;
+    }
+
+    @Override
+    public void deserialize(String json) throws JSONException {
         JSONObject jsonObject = new JSONObject(json);
-        if (jsonObject.has("api_key")) {
-            safetyNetParameterResponse.setApiKey(jsonObject.getString("api_key"));
+        if (jsonObject.has(getLiliumConfig().getSafetyNetParameterResponseApiKey())) {
+            this.setApiKey(jsonObject.getString(getLiliumConfig().getSafetyNetParameterResponseApiKey()));
         }
-        if (jsonObject.has("nonce")) {
-            safetyNetParameterResponse.setNonce(jsonObject.getString("nonce"));
+        if (jsonObject.has(getLiliumConfig().getSafetyNetParameterResponseNonce())) {
+            this.setNonce(jsonObject.getString(getLiliumConfig().getSafetyNetParameterResponseNonce()));
         }
-        return safetyNetParameterResponse;
     }
 
     @Override
