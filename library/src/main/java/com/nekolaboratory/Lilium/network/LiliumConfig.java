@@ -29,46 +29,48 @@ public class LiliumConfig {
 
     private void deserialize(String json) throws JSONException {
         JSONObject jsonObject = new JSONObject(json);
-        if (jsonObject.has("attest_report")) {
-            JSONObject attestReportJson = (JSONObject) jsonObject.get("attest_report");
-            if (attestReportJson.has("package_name")) {
-                setSafetyNetAttestReportRequestPackageName(attestReportJson.getString("package_name"));
+        if (jsonObject.has("output_json_mapping")) {
+            JSONObject outputJsonConfig = (JSONObject) jsonObject.get("output_json_mapping");
+            if (outputJsonConfig.has("attest_report")) {
+                JSONObject attestReportJson = (JSONObject) outputJsonConfig.get("attest_report");
+                if (attestReportJson.has("package_name")) {
+                    setSafetyNetAttestReportRequestPackageName(attestReportJson.getString("package_name"));
+                }
+                if (attestReportJson.has("user_id")) {
+                    setSafetyNetAttestReportRequestUserId(attestReportJson.getString("user_id"));
+                }
+                if (attestReportJson.has("ver")) {
+                    setSafetyNetAttestReportRequestVer(attestReportJson.getString("ver"));
+                }
+                if (attestReportJson.has("atn")) {
+                    setSafetyNetAttestReportRequestAtn(attestReportJson.getString("atn"));
+                }
+                if (attestReportJson.has("atn_error")) {
+                    setSafetyNetAttestReportRequestAtnError(attestReportJson.getString("atn_error"));
+                }
+                if (attestReportJson.has("atn_error_msg")) {
+                    setSafetyNetAttestReportRequestAtnErrorMsg(attestReportJson.getString("atn_error_msg"));
+                }
             }
-            if (attestReportJson.has("user_id")) {
-                setSafetyNetAttestReportRequestUserId(attestReportJson.getString("user_id"));
+            if (jsonObject.has("parameter_request")) {
+                JSONObject parameterRequestJson = (JSONObject) jsonObject.get("parameter_request");
+                if (parameterRequestJson.has("package_name")) {
+                    setSafetyNetParameterRequestPackageName(parameterRequestJson.getString("package_name"));
+                }
+                if (parameterRequestJson.has("user_id")) {
+                    setSafetyNetParameterRequestUserId(parameterRequestJson.getString("user_id"));
+                }
             }
-            if (attestReportJson.has("ver")) {
-                setSafetyNetAttestReportRequestVer(attestReportJson.getString("ver"));
-            }
-            if (attestReportJson.has("atn")) {
-                setSafetyNetAttestReportRequestAtn(attestReportJson.getString("atn"));
-            }
-            if (attestReportJson.has("atn_error")) {
-                setSafetyNetAttestReportRequestAtnError(attestReportJson.getString("atn_error"));
-            }
-            if (attestReportJson.has("atn_error_msg")) {
-                setSafetyNetAttestReportRequestAtnErrorMsg(attestReportJson.getString("atn_error_msg"));
+            if (jsonObject.has("parameter_response")) {
+                JSONObject parameterResponseJson = (JSONObject) jsonObject.get("parameter_response");
+                if (parameterResponseJson.has("api_key")) {
+                    setSafetyNetParameterResponseApiKey(parameterResponseJson.getString("api_key"));
+                }
+                if (parameterResponseJson.has("nonce")) {
+                    setSafetyNetParameterResponseNonce(parameterResponseJson.getString("nonce"));
+                }
             }
         }
-        if (jsonObject.has("parameter_request")) {
-            JSONObject parameterRequestJson = (JSONObject) jsonObject.get("parameter_request");
-            if (parameterRequestJson.has("package_name")) {
-                setSafetyNetParameterRequestPackageName(parameterRequestJson.getString("package_name"));
-            }
-            if (parameterRequestJson.has("user_id")) {
-                setSafetyNetParameterRequestUserId(parameterRequestJson.getString("user_id"));
-            }
-        }
-        if (jsonObject.has("parameter_response")) {
-            JSONObject parameterResponseJson = (JSONObject) jsonObject.get("parameter_response");
-            if (parameterResponseJson.has("api_key")) {
-                setSafetyNetParameterResponseApiKey(parameterResponseJson.getString("api_key"));
-            }
-            if (parameterResponseJson.has("nonce")) {
-                setSafetyNetParameterResponseNonce(parameterResponseJson.getString("nonce"));
-            }
-        }
-        return;
     }
 
     public String getSafetyNetAttestReportRequestPackageName() {

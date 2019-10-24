@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
                 check_text.setText(response)
                 // post(baseUri.text.toString(), response, sampleRequestCallback)
             }
-            Lilium().attest(this, baseUri.text.toString(), userId.text.toString(), attestCallback, LiliumConfig("{ attest_report : { package_name : \"packageName\", user_id : \"userUniqueId\", ver : \"ver\", atn : \"atn\", atn_error : \"atnError\", atn_error_msg : \"atnErrorMsg\" }, parameter_request : { package_name : \"packageName\", user_id : \"userUniqueId\" }, parameter_response : { api_key : \"apiKey\", nonce : \"nonce\" } }"))
+            Lilium().attestWithConfig(this, baseUri.text.toString(), userId.text.toString(), attestCallback, LiliumConfig("{ output_json_mapping : { attest_report : { package_name : \"packageName\", user_id : \"userUniqueId\", ver : \"ver\", atn : \"atn\", atn_error : \"atnError\", atn_error_msg : \"atnErrorMsg\" }, parameter_request : { package_name : \"packageName\", user_id : \"userUniqueId\" }, parameter_response : { api_key : \"apiKey\", nonce : \"nonce\" } } }"))
         }
     }
 

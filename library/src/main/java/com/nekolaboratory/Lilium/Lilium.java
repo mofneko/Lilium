@@ -17,7 +17,7 @@ public class Lilium {
         new Core(UnityPlayer.currentActivity).initialize(callback, baseUri, userId, null);
     }
 
-    public void attest(String baseUri, String userId, AttestCallback callback, String liliumConfig) throws JSONException {
+    public void attestWithConfig(String baseUri, String userId, AttestCallback callback, String liliumConfig) throws JSONException {
         new Core(UnityPlayer.currentActivity).initialize(callback, baseUri, userId, new LiliumConfig(liliumConfig));
     }
 
@@ -29,7 +29,7 @@ public class Lilium {
         new Core(context).initialize(callback, baseUri, userId, null);
     }
 
-    public void attest(Activity context, String baseUri, String userId, AttestCallback callback, LiliumConfig liliumConfig) {
+    public void attestWithConfig(Activity context, String baseUri, String userId, AttestCallback callback, LiliumConfig liliumConfig) {
         new Core(context).initialize(callback, baseUri, userId, liliumConfig);
     }
 
