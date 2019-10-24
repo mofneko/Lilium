@@ -23,14 +23,11 @@ public class SafetyNetAttestReportResponse implements LiliumResponse {
     }
 
     @Override
-    public SafetyNetAttestReportResponse deserialize(String json) throws JSONException {
-        SafetyNetAttestReportResponse safetyNetParameterResponse = new SafetyNetAttestReportResponse();
-
+    public void deserialize(String json) throws JSONException {
         JSONObject jsonObject = new JSONObject(json);
         if (jsonObject.has("response_body")) {
-            safetyNetParameterResponse.setResponseBody(jsonObject.getString("response_body"));
+            this.setResponseBody(jsonObject.getString("response_body"));
         }
-        return safetyNetParameterResponse;
     }
 
     @Override
