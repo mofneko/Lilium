@@ -82,7 +82,11 @@ public class SafetyNetAttestReportRequest implements LiliumRequest {
         map.put(getLiliumConfig().getSafetyNetAttestReportRequestAtn(), getSafetynetJwt());
         if (getSafetynetError() != null) {
             map.put(getLiliumConfig().getSafetyNetAttestReportRequestAtnError(), getSafetynetError().getStatusCode());
-            map.put(getLiliumConfig().getSafetyNetAttestReportRequestAtnErrorMsg(), getSafetynetError().getException().getMessage());
+            if (getSafetynetError().getException() != null) {
+                map.put(getLiliumConfig().getSafetyNetAttestReportRequestAtnErrorMsg(), getSafetynetError().getException().getMessage());
+            } else {
+                map.put(getLiliumConfig().getSafetyNetAttestReportRequestAtnErrorMsg(), null);
+            }
         } else {
             map.put(getLiliumConfig().getSafetyNetAttestReportRequestAtnError(), null);
             map.put(getLiliumConfig().getSafetyNetAttestReportRequestAtnErrorMsg(), null);
