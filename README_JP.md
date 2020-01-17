@@ -56,21 +56,22 @@ LiliumはSafetyNet APIから発行されるReportファイルをラップしたR
 
 # SafetyNet Attestation APIとは?
 
-The SafetyNet Attestation API helps you assess the security and compatibility of the Android environments in which your apps run. You can use this API to analyze devices that have installed your app.
+SafetyNet Attestation API は、アプリが動作している Android デバイスをアプリのデベロッパーが評価するための不正利用防止 API です。この API は、不正利用検出システムの一部として、サーバーとやり取りしているのが正規の Android デバイスで動作している正規のアプリかどうかを判断するために使用します。
 
 ## Architecture
-The overall SafetyNet Attestation protocol, which appears in Figure 1, involves the following steps:
+SafetyNet Attestation API では、次のワークフローが使用されます。
 
-1. Your app makes a call to the SafetyNet Attestation API.
-2. The API requests a signed response using its backend.
-3. The backend sends the response to Google Play services.
-4. The signed response is returned to your app.
-5. Your app should forward the signed response to a server that you trust.
-6. The server verifies the response and sends the result of the verification process back to your app.
+1. SafetyNet Attestation API がアプリからの呼び出しを受けます。この呼び出しには nonce が含まれます。
+2. SafetyNet Attestation サービスは、ランタイム環境を評価し、Google のサーバーに評価結果の署名済み構成証明をリクエストします。
+3. Google のサーバーは、署名済み構成証明をデバイスの SafetyNet Attestation サービスに送信します。
+4. SafetyNet Attestation サービスは、この署名済み構成証明をアプリに返します。
+5. アプリは署名済み構成証明をご自身のサーバーに転送します。
+6. このサーバーはレスポンスを検証し、不正利用防止の判断に使用します。ご自身のサーバーが調査結果をアプリに伝えます。
+このプロセスをFigure 1に示します。
 
 <img src="./art/attestation-protocol.png" alt="Figure 1" style="width:500px;"/>
 
-Figure 1. SafetyNet Attestation API protocol
+Figure 1. SafetyNet Attestation API プロトコル
 
 7. After completing these steps, if the result indicates that the device has passed your app's risk-model evaluation, your app can resume its services.
 
@@ -78,14 +79,14 @@ Figure 1. SafetyNet Attestation API protocol
 
 SafetyNetAPIを使用するためのAPIキーはデフォルトで1日1万件のリクエストまでの上限があります．しかし，これは申請することによって無料で上限の引き上げを行うことができます．
 
-1. Go to the [Library page](https://console.developers.google.com/apis/library) in the Google APIs Console.
-2. Search for the Android Device Verification API. When you've found the API, click on it. The Android Device Verification API dashboard screen appears.
-3. If the API isn't already enabled, click Enable.
-4. If the Create credentials button appears, click on it to generate an API key. Otherwise, click the All API credentials drop-down list and select the API key that is associated with the project for which the Android Device Verification API is enabled.
-5. In the sidebar on the left, click Credentials. Copy the API key that appears.
+SafetyNet Attestation API のメソッドを呼び出すには、API キーを使用する必要があります。キーを作成して埋め込む手順は次のとおりです。
 
-6. Use this API key whenever you call the attest() method of the SafetyNetClient class.
-
+1. Google API Console の[ライブラリ](https://console.developers.google.com/apis/library) ページに移動します。
+2. 「Android Device Verification API」を検索して選択します。Android Device Verification API ダッシュボードの画面が表示されます。
+3. API がまだ有効になっていない場合は、[有効にする] をクリックします。
+4. [認証情報を作成] ボタンが表示された場合は、それをクリックして API キーを生成します。表示されなかった場合は、[すべての API 認証情報] プルダウン リストをクリックしてから、Android Device Verification API を有効にしたプロジェクトに関連付けられている API キーを選択します。
+5. 左のサイドバーで、[認証情報] をクリックします。表示された [API キー] をコピーします。
+6. この API キーは、SafetyNetClient クラスの attest() メソッドを呼び出すときに使用します。
 7. After reviewing all the relevant documentation for this API—including best practices—estimate the number of calls your app might make to the API. If you need to make more than 10,000 requests per day across all API keys in your project, [fill out this quota request form](https://support.google.com/googleplay/android-developer/contact/safetynetqr).
 
 
@@ -134,7 +135,7 @@ and:
 
 ```gradle
 dependencies {
-    compile 'com.github.mofneko:Lilium:2.6.1'
+    compile 'com.github.mofneko:Lilium:2.7.0'
 }
 ```
 
@@ -273,17 +274,17 @@ Content-Type: application/json
 }
 ```
 
-#### About atn_error
+#### atn_errorプロパティに関して
 
-- `PREPARE_RETURNS_400` prepare returned 400 group error.
-- `PREPARE_RETURNS_500` prepare returned 500 group error.
-- `PREPARE_UNEXPECTED_ERROR` prepare another error.
-- `PLAY_SERVICE_UNAVAILABLE` Play Service disabled. (need dialog notice)
-- `ATTEST_API_ERROR_%d` `attest` returned ApiException.`%d`equals`ApiException#getStatusCode`(See https://developers.google.com/android/reference/com/google/android/gms/common/api/ApiException.html#getStatusCode)
-- `ATTEST_UNEXPECTED_ERROR` `attest` another error.
-- `UNEXPECTED_ERROR` another error.
+- `PREPARE_RETURNS_4XX` prepare apiで400番台のエラーが返却された.
+- `PREPARE_RETURNS_5XX` prepare apiで500番台のエラーが返却された.
+- `PREPARE_UNEXPECTED_ERROR` prepare apiでその他のエラーが発生した.
+- `PLAY_SERVICE_UNAVAILABLE` Play Service が無効 または，なんらかのPlayServiceの問題でSafetyNet APIが実行できる基準に満たなかった. (ダイアログを表示して適切にユーザーをガイドする必要があるでしょう)
+- `ATTEST_API_ERROR_%s` `attest` returned ApiException.`%s`equals`ApiException#getStatusCode` [See](https://developers.google.com/android/reference/com/google/android/gms/common/api/CommonStatusCodes.html).
+- `ATTEST_UNEXPECTED_ERROR` `attest` attest実行中にエラーが発生した.
+- `UNEXPECTED_ERROR` その他ライブラリ処理に想定外のエラーが発生した場合.
 
-#### About atn_error_msg when PLAY_SERVICE_UNAVAILABLE
+#### PLAY_SERVICE_UNAVAILABLEがatn_errorプロパティに入って来た場合のatn_error_messageプロパティに関して
 
 - `PLAY_SERVICE_ERROR_MISSING` PlayServiceが端末にインストールされていない．
 - `PLAY_SERVICE_ERROR_UPDATING` SafetyNetを扱うための要求バージョンをクリアしていない．

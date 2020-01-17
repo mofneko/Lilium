@@ -136,7 +136,7 @@ and:
 
 ```gradle
 dependencies {
-    compile 'com.github.mofneko:Lilium:2.6.1'
+    compile 'com.github.mofneko:Lilium:2.7.0'
 }
 ```
 
@@ -271,11 +271,11 @@ Content-Type: application/json{
 
 #### About atn_error
 
-- `PREPARE_RETURNS_400` prepare returned 400 group error.
-- `PREPARE_RETURNS_500` prepare returned 500 group error.
+- `PREPARE_RETURNS_4XX` prepare returned 400 group error.
+- `PREPARE_RETURNS_5XX` prepare returned 500 group error.
 - `PREPARE_UNEXPECTED_ERROR` prepare another error.
 - `PLAY_SERVICE_UNAVAILABLE` Play Service disabled. (need dialog notice)
-- `ATTEST_API_ERROR_%d` `attest` returned ApiException.`%d`equals`ApiException#getStatusCode`(See https://developers.google.com/android/reference/com/google/android/gms/common/api/ApiException.html#getStatusCode)
+- `ATTEST_API_ERROR_%s` `attest` returned ApiException.`%s`equals`ApiException#getStatusCode` [See](https://developers.google.com/android/reference/com/google/android/gms/common/api/CommonStatusCodes.html).
 - `ATTEST_UNEXPECTED_ERROR` `attest` another error.
 - `UNEXPECTED_ERROR` another error.
 

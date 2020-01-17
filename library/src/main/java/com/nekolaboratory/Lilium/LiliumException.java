@@ -9,11 +9,11 @@ import java.net.HttpURLConnection;
  */
 
 public class LiliumException extends Exception {
-    public static final String PREPARE_RETURNS_400 = "PREPARE_RETURNS_400";
-    public static final String PREPARE_RETURNS_500 = "PREPARE_RETURNS_500";
+    public static final String PREPARE_RETURNS_4XX = "PREPARE_RETURNS_4XX";
+    public static final String PREPARE_RETURNS_5XX = "PREPARE_RETURNS_5XX";
     public static final String PREPARE_UNEXPECTED_ERROR = "PREPARE_UNEXPECTED_ERROR";
     public static final String PLAY_SERVICE_UNAVAILABLE = "PLAY_SERVICE_UNAVAILABLE";
-    public static final String ATTEST_API_ERROR = "ATTEST_API_ERROR_%d";
+    public static final String ATTEST_API_ERROR = "ATTEST_API_ERROR_%s";
     public static final String ATTEST_UNEXPECTED_ERROR = "ATTEST_UNEXPECTED_ERROR";
     public static final String ATTEST_REPORT_ERROR = "ATTEST_REPORT_ERROR";
     public static final String UNEXPECTED_ERROR = "UNEXPECTED_ERROR";
@@ -32,9 +32,9 @@ public class LiliumException extends Exception {
 
     public static LiliumException getLiliumExceptionFromHttpResponseCode(int responseCode) {
         if (responseCode >= HttpURLConnection.HTTP_INTERNAL_ERROR) {
-            return LiliumException.getLiliumExceptionFromStatusCode(PREPARE_RETURNS_500);
+            return LiliumException.getLiliumExceptionFromStatusCode(PREPARE_RETURNS_5XX);
         } else if (responseCode >= HttpURLConnection.HTTP_BAD_REQUEST) {
-            return LiliumException.getLiliumExceptionFromStatusCode(PREPARE_RETURNS_400);
+            return LiliumException.getLiliumExceptionFromStatusCode(PREPARE_RETURNS_4XX);
         }
         return LiliumException.getLiliumExceptionFromStatusCode(UNEXPECTED_ERROR);
     }

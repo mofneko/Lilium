@@ -5,6 +5,7 @@ import android.content.Context;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.safetynet.SafetyNet;
 import com.google.android.gms.safetynet.SafetyNetApi;
@@ -55,7 +56,7 @@ public class SafetyNetWrap {
                         LiliumException liliumException = LiliumException.getLiliumExceptionFromException(e);
                         if (ApiException.class.equals(e.getClass())) {
                             ApiException apiException = (ApiException) e;
-                            liliumException.setStatusCode(String.format(LiliumException.ATTEST_API_ERROR, apiException.getStatusCode()));
+                            liliumException.setStatusCode(String.format(LiliumException.ATTEST_API_ERROR, CommonStatusCodes.getStatusCodeString(apiException.getStatusCode())));
                         } else {
                             liliumException.setStatusCode(LiliumException.ATTEST_UNEXPECTED_ERROR);
                         }
