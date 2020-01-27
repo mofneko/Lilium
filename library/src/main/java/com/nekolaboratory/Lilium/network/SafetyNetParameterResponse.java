@@ -2,6 +2,7 @@ package com.nekolaboratory.Lilium.network;
 
 import android.util.Base64;
 
+import com.nekolaboratory.Lilium.LiliumConfig;
 import com.nekolaboratory.Lilium.LiliumException;
 
 import org.json.JSONException;

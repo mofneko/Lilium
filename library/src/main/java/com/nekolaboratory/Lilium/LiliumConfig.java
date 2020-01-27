@@ -1,4 +1,4 @@
-package com.nekolaboratory.Lilium.network;
+package com.nekolaboratory.Lilium;
 
 import org.json.JSONException;
 import org.json.JSONObject;

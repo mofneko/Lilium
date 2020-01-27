@@ -1,5 +1,7 @@
 package com.nekolaboratory.Lilium.network;
 
+import com.nekolaboratory.Lilium.LiliumConfig;
+
 import org.json.JSONObject;
 
 import java.util.HashMap;

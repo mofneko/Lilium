@@ -1,6 +1,7 @@
 package com.nekolaboratory.Lilium.network;
 
 import com.nekolaboratory.Lilium.BuildConfig;
+import com.nekolaboratory.Lilium.LiliumConfig;
 import com.nekolaboratory.Lilium.LiliumException;
 
 import org.json.JSONObject;
