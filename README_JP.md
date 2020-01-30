@@ -92,6 +92,8 @@ SafetyNet Attestation API のメソッドを呼び出すには、API キーを�
 
 # Liliumの推奨するシーケンス・ダイアグラム
 
+##### ライブラリ内蔵のprepareリクエストを使ってAPIKeyとnonceを自前のサーバーから取得する場合
+
 <img src="./art/lilium-sequence.png" alt="Figure 1" style="width:500px;"/>
 
 ```plantuml
@@ -99,6 +101,34 @@ group Lilium(this library) sequence
 "App" -> GameServer : Prepare Request(package_name, user_id)
 GameServer -> "App" : api_key, nonce
 
+"App" -> "PlayService" : SafetyNet API Call(api_key, nonce)
+
+group SafetyNet sequence
+"PlayService" -> GoogleServer : Black Box
+GoogleServer -> "PlayService" : Black Box
+end
+
+"PlayService" -> "App" : attestation jwt report
+
+"App" -> "App" : make report json
+end
+
+"App" -> GameServer : Report Request(json)
+GameServer -> GameServer : attest judge
+GameServer -> "App" : Login Response
+```
+
+または，Safetynetに必要なAPIKeyとnonceを指定することでprepareリクエストを省略してattestだけを実行することもできます．
+
+##### 直接APIKeyとnonceを指定する場合
+
+<img src="./art/lilium-sequence-direct-attestmode.png" alt="Figure 1" style="width:500px;"/>
+
+```
+"App" -> GameServer : Safetynet APIKey Request(some auth param etc..)
+GameServer -> "App" : api_key, nonce
+
+group Lilium(this library) sequence
 "App" -> "PlayService" : SafetyNet API Call(api_key, nonce)
 
 group SafetyNet sequence
@@ -149,10 +179,20 @@ Step1. Handling SafetyNetDelegate
             }
 ```
 
+[ライブラリ内蔵のprepareリクエストを使ってAPIKeyとnonceを自前のサーバーから取得する場合](https://github.com/mofneko/Lilium/blob/master/README_JP.md#%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E5%86%85%E8%94%B5%E3%81%AEprepare%E3%83%AA%E3%82%AF%E3%82%A8%E3%82%B9%E3%83%88%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6apikey%E3%81%A8nonce%E3%82%92%E8%87%AA%E5%89%8D%E3%81%AE%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%81%8B%E3%82%89%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88)のシーケンスで実行する場合，
+
 Step2. Attest
 
 ```kotlin
             Lilium().attest(this, "BASE_URI_HERE", "USERID_HERE", attestCallback)
+```
+
+または[直接APIKeyとnonceを指定する場合](https://github.com/mofneko/Lilium/blob/master/README_JP.md#%E7%9B%B4%E6%8E%A5apikey%E3%81%A8nonce%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88)のシーケンスでattestのみを実行する場合，
+
+Step2. Attest
+
+```kotlin
+            Lilium().attest(this, "USERID_HERE", "API_KEY_HERE", "NONCE_HERE", attestCallback)
 ```
 
 注意： SafetyNetはPlayServiceの機能の一部を利用しています．通常は端末にインストールされているPlayServiceアプリが何らかの形で実行の妨げになっている場合は，ユーザーに対して適切なガイドラインを提示する必要があります．Liliumライブラリは次の一行でユーザーに状況の説明とルーティングを提供するダイアログを表示することができます．
@@ -183,6 +223,8 @@ and fact Delegate.
 
 and execute Attest.
 
+[ライブラリ内蔵のprepareリクエストを使ってAPIKeyとnonceを自前のサーバーから取得する場合](https://github.com/mofneko/Lilium/blob/master/README_JP.md#%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E5%86%85%E8%94%B5%E3%81%AEprepare%E3%83%AA%E3%82%AF%E3%82%A8%E3%82%B9%E3%83%88%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6apikey%E3%81%A8nonce%E3%82%92%E8%87%AA%E5%89%8D%E3%81%AE%E3%82%B5%E3%83%BC%E3%83%90%E3%83%BC%E3%81%8B%E3%82%89%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88)のシーケンスで実行する場合，
+
 ```C# (Unity)
     void Attest()
     {
@@ -191,6 +233,20 @@ and execute Attest.
         {
         // Step2. Attest
          Lilium.Call("attest", "BASE_URI_HERE", "USERID_HERE", new AttestListener());
+        }
+    }
+```
+
+または[直接APIKeyとnonceを指定する場合](https://github.com/mofneko/Lilium/blob/master/README_JP.md#%E7%9B%B4%E6%8E%A5apikey%E3%81%A8nonce%E3%82%92%E6%8C%87%E5%AE%9A%E3%81%99%E3%82%8B%E5%A0%B4%E5%90%88)のシーケンスでattestのみを実行する場合，
+
+```C# (Unity)
+    void Attest()
+    {
+        // Step1. Instantiate
+        using (AndroidJavaObject Lilium = new AndroidJavaObject("com.nekolaboratory.Lilium.Lilium"))
+        {
+        // Step2. Attest
+         Lilium.Call("attest", "USERID_HERE", "API_KEY_HERE", "NONCE_HERE", new AttestListener());
         }
     }
 ```
@@ -305,7 +361,7 @@ $ ./gradlew assembleRelease
 ```
 MIT License
 
-Copyright (c) 2019 Yusuke Arakawa
+Copyright (c) 2020 Yusuke Arakawa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

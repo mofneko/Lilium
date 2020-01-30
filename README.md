@@ -91,7 +91,9 @@ By default, API keys for using SafetyNetAPI have an upper limit of 10,000 reques
 7. After reviewing all the relevant documentation for this API—including best practices—estimate the number of calls your app might make to the API. If you need to make more than 10,000 requests per day across all API keys in your project, [fill out this quota request form](https://support.google.com/googleplay/android-developer/contact/safetynetqr).
 
 
-# Sequence diagram
+# Lilium recommended sequence diagram
+
+##### When using the library built-in prepare request to get the APIKey and nonce from your own server
 
 <img src="./art/lilium-sequence.png" alt="Figure 1" style="width:500px;"/>
 
@@ -100,6 +102,34 @@ group Lilium(this library) sequence
 "App" -> GameServer : Prepare Request(package_name, user_id)
 GameServer -> "App" : api_key, nonce
 
+"App" -> "PlayService" : SafetyNet API Call(api_key, nonce)
+
+group SafetyNet sequence
+"PlayService" -> GoogleServer : Black Box
+GoogleServer -> "PlayService" : Black Box
+end
+
+"PlayService" -> "App" : attestation jwt report
+
+"App" -> "App" : make report json
+end
+
+"App" -> GameServer : Report Request(json)
+GameServer -> GameServer : attest judge
+GameServer -> "App" : Login Response
+```
+
+or, you can omit the prepare request and execute only attest by specifying the APIKey and nonce required for Safetynet.
+
+##### When directly specifying APIKey and nonce
+
+<img src="./art/lilium-sequence-direct-attestmode.png" alt="Figure 1" style="width:500px;"/>
+
+```
+"App" -> GameServer : Safetynet APIKey Request(some auth param etc..)
+GameServer -> "App" : api_key, nonce
+
+group Lilium(this library) sequence
 "App" -> "PlayService" : SafetyNet API Call(api_key, nonce)
 
 group SafetyNet sequence
@@ -150,13 +180,24 @@ Step1. Handling SafetyNetDelegate
             }
 ```
 
+When executing in the sequence [When using the library built-in prepare request to get the APIKey and nonce from your own server
+](https://github.com/mofneko/Lilium#when-using-the-library-built-in-prepare-request-to-get-the-apikey-and-nonce-from-your-own-server).
+
 Step2. Attest
 
 ```kotlin
             Lilium().attest(this, "BASE_URI_HERE", "USERID_HERE", attestCallback)
 ```
 
-Note: SafetyNet uses part of the PlayService functionality. Normally, if the PlayService application installed on the device is obstructing the execution in some way, it is necessary to provide appropriate guidelines to the user. The Lilium library can display a dialog that provides the user with a description of the situation and routing on the next line.
+Or, when only attest is executed in the sequence [When directly specifying APIKey and nonce](https://github.com/mofneko/Lilium#when-directly-specifying-apikey-and-nonce).
+
+Step2. Attest
+
+```kotlin
+            Lilium().attest(this, "USERID_HERE", "API_KEY_HERE", "NONCE_HERE", attestCallback)
+```
+
+Note: SafetyNet uses some of the functions of PlayService. If the PlayService app that is normally installed on the device is blocking the execution in some way, it is necessary to present appropriate guidelines to the user. The Lilium library can display a dialog with the following line giving the user a description and routing of the situation.
 
 ```kotlin
             Lilium().showErrorPlayService(this)
@@ -184,6 +225,9 @@ and fact Delegate.
 
 and execute Attest.
 
+When executing in the sequence [When using the library built-in prepare request to get the APIKey and nonce from your own server
+](https://github.com/mofneko/Lilium#when-using-the-library-built-in-prepare-request-to-get-the-apikey-and-nonce-from-your-own-server).
+
 ```C# (Unity)
     void Attest()
     {
@@ -191,7 +235,21 @@ and execute Attest.
         using (AndroidJavaObject Lilium = new AndroidJavaObject("com.nekolaboratory.Lilium.Lilium"))
         {
         // Step2. Attest
-          Lilium.Call("attest", "BASE_URI_HERE", "USERID_HERE", new AttestListener());
+         Lilium.Call("attest", "BASE_URI_HERE", "USERID_HERE", new AttestListener());
+        }
+    }
+```
+
+Or, when only attest is executed in the sequence [When directly specifying APIKey and nonce](https://github.com/mofneko/Lilium#when-directly-specifying-apikey-and-nonce).
+
+```C# (Unity)
+    void Attest()
+    {
+        // Step1. Instantiate
+        using (AndroidJavaObject Lilium = new AndroidJavaObject("com.nekolaboratory.Lilium.Lilium"))
+        {
+        // Step2. Attest
+         Lilium.Call("attest", "USERID_HERE", "API_KEY_HERE", "NONCE_HERE", new AttestListener());
         }
     }
 ```
@@ -203,19 +261,21 @@ Note: SafetyNet uses part of the PlayService functionality. Normally, if the Pla
     {
         using (AndroidJavaObject Lilium = new AndroidJavaObject("com.nekolaboratory.Lilium.Lilium"))
         {
-          Lilium.Call("showErrorPlayService");
+         Lilium.Call("showErrorPlayService");
         }
     }
 ```
 
-# Communication specification
-Must be implemented on the server side
+# Server side flow
+To use the Lilium library, you need to implement an appropriate API on the server side. Many services can easily implement the following two APIs:
 
-## prepare(get API key, nonce)
+## prepare api(get API key, nonce)
 
 ### endpoint
 
 - https://BASE_URI/prepare
+
+Note: BASE_URI can be customized as you like, including the schema.
 
 ### Request
 
@@ -224,8 +284,8 @@ POST
 Content-Type: application/json
 
 {
-  "user_id": "User identify in your service",
-  "package_name": "App package name"
+  "user_id": "Normally, a character string for identifying the user who sent the request to determine the consistency of the APK is received here. Since the value here can be any String, the usage is as described above. Not.",
+  "package_name": "You will receive the package name of the application, because if the APK file is divided into different package names for the test and the production, the API key can be sorted by the package name received here."
 }
 ```
 
@@ -235,7 +295,9 @@ Content-Type: application/json
 
 ```
 200 OK
-Content-Type: application/json{
+Content-Type: application/json
+
+{
   "api_key": "Please return the API key issued in advance preparation items.",
   "nonce": "nonce (Base64 Encorded)"
 }
@@ -259,7 +321,9 @@ Note: The following endpoints are examples. Lilium creates a report and returns 
 
 ```
 POST
-Content-Type: application/json{
+Content-Type: application/json
+
+{
   "user_id": "The user_id returned by prepare is included. As a usage method, it can be used to determine whether the user who requested prepare has sent the report in the correct flow.",
   "package_name": "Contains the application package name.",
   "ver": "The Lilium library version is included. If this library contains bugs or vulnerabilities, it will be updated, so make sure that the server-side library is up-to-date. Is recommended. ",
@@ -300,7 +364,7 @@ $ ./gradlew assembleRelease
 ```
 MIT License
 
-Copyright (c) 2019 Yusuke Arakawa
+Copyright (c) 2020 Yusuke Arakawa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
