@@ -114,7 +114,7 @@ public class Core {
         setAttestCallback(attestCallback);
         setBaseUri(baseUri);
         setUserId(userId);
-        if (!liliumConfig.isEmpty()) {
+        if (liliumConfig != null && !liliumConfig.isEmpty()) {
             try {
                 setLiliumConfig(new LiliumConfig(liliumConfig));
             } catch (JSONException e) {
@@ -170,7 +170,7 @@ public class Core {
     public void attest(AttestCallback callback, String userId, String apiKey, String nonce, String liliumConfig) {
         setAttestCallback(callback);
         setUserId(userId);
-        if (!liliumConfig.isEmpty()) {
+        if (liliumConfig != null && !liliumConfig.isEmpty()) {
             try {
                 setLiliumConfig(new LiliumConfig(liliumConfig));
             } catch (JSONException e) {

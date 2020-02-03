@@ -5,7 +5,7 @@ import android.content.pm.PackageManager
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.nekolaboratory.Lilium.DefaultAttestCallback
 import com.nekolaboratory.Lilium.Lilium
 import com.nekolaboratory.Lilium.LiliumConfig

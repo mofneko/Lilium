@@ -52,8 +52,8 @@ public class LiliumConfig {
                     setSafetyNetAttestReportRequestAtnErrorMsg(attestReportJson.getString("atn_error_msg"));
                 }
             }
-            if (jsonObject.has("parameter_request")) {
-                JSONObject parameterRequestJson = (JSONObject) jsonObject.get("parameter_request");
+            if (outputJsonConfig.has("parameter_request")) {
+                JSONObject parameterRequestJson = (JSONObject) outputJsonConfig.get("parameter_request");
                 if (parameterRequestJson.has("package_name")) {
                     setSafetyNetParameterRequestPackageName(parameterRequestJson.getString("package_name"));
                 }
@@ -61,8 +61,8 @@ public class LiliumConfig {
                     setSafetyNetParameterRequestUserId(parameterRequestJson.getString("user_id"));
                 }
             }
-            if (jsonObject.has("parameter_response")) {
-                JSONObject parameterResponseJson = (JSONObject) jsonObject.get("parameter_response");
+            if (outputJsonConfig.has("parameter_response")) {
+                JSONObject parameterResponseJson = (JSONObject) outputJsonConfig.get("parameter_response");
                 if (parameterResponseJson.has("api_key")) {
                     setSafetyNetParameterResponseApiKey(parameterResponseJson.getString("api_key"));
                 }
