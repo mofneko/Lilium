@@ -23,6 +23,7 @@
 -keep public class com.nekolaboratory.Lilium.Lilium {
    public void attest(...);
    public void attestWithConfig(...);
+   public void showErrorPlayService(...);
 }
 -keep public class com.nekolaboratory.Lilium.DefaultAttestCallback {
    public void onResult(...);
