@@ -351,6 +351,62 @@ Content-Type: application/json
 - `PLAY_SERVICE_ERROR_DISABLED` PlayService is frozen by the user.
 - `PLAY_SERVICE_ERROR_INVALID` The PlayService module is invalid.
 
+# Advanced
+
+## JSON key setting
+
+The report JSON key output by LILIUM can be overwritten with any character string.
+This usage is an example: It is effective when the JSON format parsed on the server side is not the default snake case but the camel case.
+
+### Setting method
+
+Add any setting format as JSON to the argument of attestAPI.
+NOTE: Items that do not need to be set can be omitted. In that case, the default values ​​will be used for the omitted items.
+
+#### Java
+
+```Java
+Lilium().attest(this, baseUri.text.toString(), userId.text.toString(), attestCallback, LiliumConfig("{ output_json_mapping : { attest_report : { package_name : \"packageName\", user_id : \"userUniqueId\", ver : \"ver\", atn : \"atn\", atn_error : \"atnError\", atn_error_msg : \"atnErrorMsg\" }, parameter_request : { package_name : \"packageName\", user_id : \"userUniqueId\" }, parameter_response : { api_key : \"apiKey\", nonce : \"nonce\" } } }"))
+```
+
+Please pass the arbitrary setting contents in String type JSON format to the fifth argument of attest API.
+In the case of Java, an interface called LiliumConfig is provided for more concise description.
+
+#### C#(Unity)
+
+```C#(Unity)
+Lilium.Call("attest", "BASE_URI_HERE", "USERID_HERE", new AttestListener(), "{ output_json_mapping : { attest_report : { package_name : \"packageName\", user_id : \"userUniqueId\", ver : \"ver\", atn : \"atn\", atn_error : \"atnError\", atn_error_msg : \"atnErrorMsg\" }, parameter_request : { package_name : \"packageName\", user_id : \"userUniqueId\" }, parameter_response : { api_key : \"apiKey\", nonce : \"nonce\" } } }");
+```
+
+Please pass any setting contents to the 4th argument of attest API in string type JSON format.
+
+### Items that can be set
+
+The complete content of the configuration JSON is shown below.
+
+```JSON
+{
+  "output_json_mapping": {
+    "attest_report": {
+      "package_name": "packageName",
+      "user_id": "userUniqueId",
+      "ver": "ver",
+      "atn": "atn",
+      "atn_error": "atnError",
+      "atn_error_msg": "atnErrorMsg"
+    },
+    "parameter_request": {
+      "package_name": "packageName",
+      "user_id": "userUniqueId"
+    },
+    "parameter_response": {
+      "api_key": "apiKey",
+      "nonce": "nonce"
+    }
+  }
+}
+```
+
 # Development
 
 ```

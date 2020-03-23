@@ -56,18 +56,18 @@ LiliumはSafetyNet APIから発行されるReportファイルをラップしたR
 
 # SafetyNet Attestation APIとは?
 
-SafetyNet Attestation API は、アプリが動作している Android デバイスをアプリのデベロッパーが評価するための不正利用防止 API です。この API は、不正利用検出システムの一部として、サーバーとやり取りしているのが正規の Android デバイスで動作している正規のアプリかどうかを判断するために使用します。
+SafetyNet Attestation API は，アプリが動作している Android デバイスをアプリのデベロッパーが評価するための不正利用防止 API です．この API は，不正利用検出システムの一部として，サーバーとやり取りしているのが正規の Android デバイスで動作している正規のアプリかどうかを判断するために使用します．
 
 ## Architecture
-SafetyNet Attestation API では、次のワークフローが使用されます。
+SafetyNet Attestation API では，次のワークフローが使用されます．
 
-1. SafetyNet Attestation API がアプリからの呼び出しを受けます。この呼び出しには nonce が含まれます。
-2. SafetyNet Attestation サービスは、ランタイム環境を評価し、Google のサーバーに評価結果の署名済み構成証明をリクエストします。
-3. Google のサーバーは、署名済み構成証明をデバイスの SafetyNet Attestation サービスに送信します。
-4. SafetyNet Attestation サービスは、この署名済み構成証明をアプリに返します。
-5. アプリは署名済み構成証明をご自身のサーバーに転送します。
-6. このサーバーはレスポンスを検証し、不正利用防止の判断に使用します。ご自身のサーバーが調査結果をアプリに伝えます。
-このプロセスをFigure 1に示します。
+1. SafetyNet Attestation API がアプリからの呼び出しを受けます．この呼び出しには nonce が含まれます．
+2. SafetyNet Attestation サービスは，ランタイム環境を評価し，Google のサーバーに評価結果の署名済み構成証明をリクエストします．
+3. Google のサーバーは，署名済み構成証明をデバイスの SafetyNet Attestation サービスに送信します．
+4. SafetyNet Attestation サービスは，この署名済み構成証明をアプリに返します．
+5. アプリは署名済み構成証明をご自身のサーバーに転送します．
+6. このサーバーはレスポンスを検証し，不正利用防止の判断に使用します．ご自身のサーバーが調査結果をアプリに伝えます．
+このプロセスをFigure 1に示します．
 
 <img src="./art/attestation-protocol.png" alt="Figure 1" style="width:500px;"/>
 
@@ -79,14 +79,14 @@ Figure 1. SafetyNet Attestation API プロトコル
 
 SafetyNetAPIを使用するためのAPIキーはデフォルトで1日1万件のリクエストまでの上限があります．しかし，これは申請することによって無料で上限の引き上げを行うことができます．
 
-SafetyNet Attestation API のメソッドを呼び出すには、API キーを使用する必要があります。キーを作成して埋め込む手順は次のとおりです。
+SafetyNet Attestation API のメソッドを呼び出すには，API キーを使用する必要があります．キーを作成して埋め込む手順は次のとおりです．
 
-1. Google API Console の[ライブラリ](https://console.developers.google.com/apis/library) ページに移動します。
-2. 「Android Device Verification API」を検索して選択します。Android Device Verification API ダッシュボードの画面が表示されます。
-3. API がまだ有効になっていない場合は、[有効にする] をクリックします。
-4. [認証情報を作成] ボタンが表示された場合は、それをクリックして API キーを生成します。表示されなかった場合は、[すべての API 認証情報] プルダウン リストをクリックしてから、Android Device Verification API を有効にしたプロジェクトに関連付けられている API キーを選択します。
-5. 左のサイドバーで、[認証情報] をクリックします。表示された [API キー] をコピーします。
-6. この API キーは、SafetyNetClient クラスの attest() メソッドを呼び出すときに使用します。
+1. Google API Console の[ライブラリ](https://console.developers.google.com/apis/library) ページに移動します．
+2. 「Android Device Verification API」を検索して選択します．Android Device Verification API ダッシュボードの画面が表示されます．
+3. API がまだ有効になっていない場合は，[有効にする] をクリックします．
+4. [認証情報を作成] ボタンが表示された場合は，それをクリックして API キーを生成します．表示されなかった場合は，[すべての API 認証情報] プルダウン リストをクリックしてから，Android Device Verification API を有効にしたプロジェクトに関連付けられている API キーを選択します．
+5. 左のサイドバーで，[認証情報] をクリックします．表示された [API キー] をコピーします．
+6. この API キーは，SafetyNetClient クラスの attest() メソッドを呼び出すときに使用します．
 7. After reviewing all the relevant documentation for this API—including best practices—estimate the number of calls your app might make to the API. If you need to make more than 10,000 requests per day across all API keys in your project, [fill out this quota request form](https://support.google.com/googleplay/android-developer/contact/safetynetqr).
 
 
@@ -347,6 +347,62 @@ Content-Type: application/json
 - `PLAY_SERVICE_ERROR_VERSION_UPDATE_REQUIRED` SafetyNetを扱うための要求バージョンをクリアしていない．
 - `PLAY_SERVICE_ERROR_DISABLED` PlayServiceがユーザーによって凍結されている．
 - `PLAY_SERVICE_ERROR_INVALID` PlayServiceのモジュールが不正なものである．
+
+# 高度な使い方
+
+## JSONキーの設定
+
+LILIUMが出力するレポートJSONのキーは任意の文字列に上書きすることができます．
+この使い方は例として：サーバーサイドでパースするJSON形式がデフォルトのスネークケースではなく，キャメルケースである場合などに有効です．
+
+### 設定方法
+
+attestAPIの引数に任意の設定形式をJSONで追加してください．
+※設定の必要のない項目は省略可能です．その場合，，省略した項目はデフォルトの値が使用されます．
+
+#### Java
+
+```Java
+Lilium().attest(this, baseUri.text.toString(), userId.text.toString(), attestCallback, LiliumConfig("{ output_json_mapping : { attest_report : { package_name : \"packageName\", user_id : \"userUniqueId\", ver : \"ver\", atn : \"atn\", atn_error : \"atnError\", atn_error_msg : \"atnErrorMsg\" }, parameter_request : { package_name : \"packageName\", user_id : \"userUniqueId\" }, parameter_response : { api_key : \"apiKey\", nonce : \"nonce\" } } }"))
+```
+
+attest APIの5番目の引数に任意の設定内容をString型のJSON形式で渡してください．
+Javaの場合はより簡潔に記載するためのLiliumConfigというインタフェースを用意しています．
+
+#### C#(Unity)
+
+```C#(Unity)
+Lilium.Call("attest", "BASE_URI_HERE", "USERID_HERE", new AttestListener(), "{ output_json_mapping : { attest_report : { package_name : \"packageName\", user_id : \"userUniqueId\", ver : \"ver\", atn : \"atn\", atn_error : \"atnError\", atn_error_msg : \"atnErrorMsg\" }, parameter_request : { package_name : \"packageName\", user_id : \"userUniqueId\" }, parameter_response : { api_key : \"apiKey\", nonce : \"nonce\" } } }");
+```
+
+attest APIの4番目の引数に任意の設定内容をstring型のJSON形式で渡してください．
+
+### 設定可能項目
+
+設定JSONの完全な内容を下記に示します．
+
+```JSON
+{
+  "output_json_mapping": {
+    "attest_report": {
+      "package_name": "packageName",
+      "user_id": "userUniqueId",
+      "ver": "ver",
+      "atn": "atn",
+      "atn_error": "atnError",
+      "atn_error_msg": "atnErrorMsg"
+    },
+    "parameter_request": {
+      "package_name": "packageName",
+      "user_id": "userUniqueId"
+    },
+    "parameter_response": {
+      "api_key": "apiKey",
+      "nonce": "nonce"
+    }
+  }
+}
+```
 
 # Development
 
